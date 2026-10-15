@@ -11,7 +11,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "peer_ip": "",
     "peer_port": 58888,
     "secret_key": "ClipBeamSecret2026",
-    "hotkey_modifiers": ["ctrl", "alt"],
+    "hotkey_modifiers": ["ctrl", "shift"],
     "hotkey_key": "c",
     "auto_sync": False,
     "show_notifications": True,

@@ -233,7 +233,7 @@ class SettingsWindow:
             if self.mod_alt_var.get(): mods.append("alt")
             if self.mod_shift_var.get(): mods.append("shift")
             if not mods:
-                mods = ["ctrl", "alt"]
+                mods = ["ctrl", "shift"]
 
             key = self.key_var.get().strip().lower() or "c"
 

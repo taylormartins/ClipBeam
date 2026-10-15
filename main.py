@@ -70,7 +70,7 @@ class ClipBeamApp:
         print(f"[Server] {msg}")
 
     def _apply_hotkey(self):
-        mods = self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "alt"])
+        mods = self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "shift"])
         key = self.cfg_mgr.get("hotkey_key", "c")
         if self.hotkey_mgr:
             self.hotkey_mgr.start(mods, key)
@@ -111,7 +111,7 @@ class ClipBeamApp:
             menu=self._build_menu()
         )
         # Notify user that ClipBeam is running in tray
-        hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "alt"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
+        hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "shift"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
         print(f"[ClipBeam] Running in tray. Shortcut: {hk_display}")
 
         # Show initial notification on launch
@@ -122,13 +122,13 @@ class ClipBeamApp:
 
     def _initial_notify(self):
         time.sleep(1.0)
-        hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "alt"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
+        hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "shift"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
         peer_ip = self.cfg_mgr.get("peer_ip", "")
         peer_str = f"Peer: {peer_ip}" if peer_ip else "Configure peer IP in Settings"
         self.show_notification("⚡ ClipBeam Ready", f"Shortcut: {hk_display}\n{peer_str}")
 
     def _build_menu(self) -> Menu:
-        hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "alt"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
+        hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "shift"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
         
         # Recent clips submenu
         recent_items = []

@@ -2,7 +2,7 @@
 
 **Encrypted Peer-to-Peer LAN Clipboard Beamer for Windows**
 
-ClipBeam is a lightweight, zero-latency system tray application designed for developers working across multiple computers (e.g., a personal desktop and a work laptop on corporate VPN). It allows you to beam text, multi-thousand-line code snippets, and terminal logs directly between computers over local Wi-Fi with a single keystroke (`Ctrl + Alt + C`).
+ClipBeam is a lightweight, zero-latency system tray application designed for developers working across multiple computers (e.g., a personal desktop and a work laptop on corporate VPN). It allows you to beam text, multi-thousand-line code snippets, and terminal logs directly between computers over local Wi-Fi with a single keystroke (`Ctrl + Shift + C`).
 
 No character limits, no clunky Google Chat highlighting, no terminals opening in the background—just instant clipboard-to-clipboard transfer.
 
@@ -10,7 +10,7 @@ No character limits, no clunky Google Chat highlighting, no terminals opening in
 
 ## ✨ Features
 
-- **⚡ Instant Beam (`Ctrl + Alt + C`)**: Press the hotkey on Computer A, and the text immediately lands in Computer B's clipboard, ready for `Ctrl + V`.
+- **⚡ Instant Beam (`Ctrl + Shift + C`)**: Press the hotkey on Computer A, and the text immediately lands in Computer B's clipboard, ready for `Ctrl + V`.
 - **🔒 AES-256 Encrypted**: End-to-end encryption using Fernet (AES-128-CBC + HMAC-SHA256) with a pre-shared secret passphrase. Unauthorized packets or mismatched keys are rejected.
 - **📦 High-Speed zlib Compression**: Massive 50,000-line server logs compress by 80–90% and beam across your Wi-Fi in milliseconds.
 - **🛡️ Corporate VPN Friendly**: Designed to work over local subnets even when one computer is connected to a corporate VPN (like Palo Alto GlobalProtect) where multicast/mDNS is blocked.
@@ -46,7 +46,7 @@ Download **`ClipBeam.exe`** on both of your computers from the [Releases](https:
 
 ### 5. You're Ready!
 - Copy any text or terminal log on either computer.
-- Press **`Ctrl + Alt + C`**.
+- Press **`Ctrl + Shift + C`**.
 - The other computer will chime and display a toast notification with the log preview.
 - Press **`Ctrl + V`** on the other computer to paste immediately!
 
@@ -58,7 +58,7 @@ Through the **Settings** window or tray menu, you can customize:
 
 | Option | Default | Description |
 |---|---|---|
-| **Hotkey** | `Ctrl + Alt + C` | Global shortcut to beam current clipboard |
+| **Hotkey** | `Ctrl + Shift + C` | Global shortcut to beam current clipboard |
 | **Port** | `58888` | Local and peer TCP port (change if conflicting) |
 | **Shared Secret** | `ClipBeamSecret2026` | Passphrase used to derive the AES encryption key |
 | **Auto-Sync** | `Disabled` | Automatically beam whenever clipboard text changes |

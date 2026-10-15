@@ -25,7 +25,7 @@ class HotkeyManager:
         self._running = False
         self._hotkey_id = 1001
 
-        self.modifiers = ["ctrl", "alt"]
+        self.modifiers = ["ctrl", "shift"]
         self.key = "c"
 
     def _parse_vk(self, key_str: str) -> int:
