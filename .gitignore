@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# PyInstaller / Build
+build/
+*.spec
+
+# Keep dist in gitignore, binary will be published to GitHub Releases
+dist/
+
+# Local User Configurations & Logs
+clipbeam_config.json
+*.log
+.write_test
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
