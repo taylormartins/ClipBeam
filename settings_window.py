@@ -2,14 +2,15 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
-from typing import Callable, Dict, Any, List
+from typing import Callable, Dict, Any, List, Optional
 from config_manager import ConfigManager
 from network_client import NetworkClient
 
 class SettingsWindow:
-    def __init__(self, config_manager: ConfigManager, on_save_callback: Callable[[Dict[str, Any]], None]):
+    def __init__(self, config_manager: ConfigManager, on_save_callback: Callable[[Dict[str, Any]], None], on_check_updates: Optional[Callable[[], None]] = None):
         self.cfg_mgr = config_manager
         self.on_save_callback = on_save_callback
+        self.on_check_updates = on_check_updates
         self.root: Optional[tk.Tk] = None
         self._is_open = False
 
@@ -218,6 +219,12 @@ class SettingsWindow:
         # Bottom Action Bar
         bottom_bar = tk.Frame(self.root, bg=bg_main, padx=20, pady=10)
         bottom_bar.pack(fill="x", side="bottom")
+
+        if self.on_check_updates:
+            update_btn = tk.Button(bottom_bar, text="⬇️ Check for Updates", font=("Segoe UI", 8, "bold"), bg="#1e293b", fg="#38bdf8",
+                                   activebackground="#334155", activeforeground=fg_white, bd=1, relief="solid", padx=10, pady=5, cursor="hand2",
+                                   command=self.on_check_updates)
+            update_btn.pack(side="left")
 
         def save_and_close():
             try:

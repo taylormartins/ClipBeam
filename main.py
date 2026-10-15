@@ -21,6 +21,9 @@ from network_server import ClipBeamServer
 from network_client import NetworkClient
 from hotkey_manager import HotkeyManager
 from settings_window import SettingsWindow
+from updater import Updater, CURRENT_VERSION
+
+APP_VERSION = CURRENT_VERSION
 
 class ClipBeamApp:
     def __init__(self):
@@ -42,8 +45,8 @@ class ClipBeamApp:
         # 1. Start Server
         self._start_server()
 
-        # 2. Start Global Hotkey
-        self.hotkey_mgr = HotkeyManager(on_hotkey_pressed=self.beam_clipboard_now)
+        # 2. Start Global Hotkey (grab_active=True automatically captures highlighted text!)
+        self.hotkey_mgr = HotkeyManager(on_hotkey_pressed=lambda: self.beam_clipboard_now(grab_active=True))
         self._apply_hotkey()
 
         # 3. Start Auto-Sync Poller
@@ -52,7 +55,7 @@ class ClipBeamApp:
         self._sync_thread.start()
 
         # 4. Initialize Settings Window Manager
-        self.settings_win = SettingsWindow(self.cfg_mgr, on_save_callback=self._on_settings_saved)
+        self.settings_win = SettingsWindow(self.cfg_mgr, on_save_callback=self._on_settings_saved, on_check_updates=self.check_for_updates_ui)
 
         # 5. Start System Tray Icon
         self._run_tray_icon()
@@ -107,7 +110,7 @@ class ClipBeamApp:
         self.icon = pystray.Icon(
             "ClipBeam",
             image,
-            "ClipBeam - LAN Clipboard Sync",
+            f"ClipBeam {APP_VERSION} - LAN Clipboard Sync",
             menu=self._build_menu()
         )
         # Notify user that ClipBeam is running in tray
@@ -125,7 +128,7 @@ class ClipBeamApp:
         hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "shift"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
         peer_ip = self.cfg_mgr.get("peer_ip", "")
         peer_str = f"Peer: {peer_ip}" if peer_ip else "Configure peer IP in Settings"
-        self.show_notification("⚡ ClipBeam Ready", f"Shortcut: {hk_display}\n{peer_str}")
+        self.show_notification(f"⚡ ClipBeam {APP_VERSION} Ready", f"Shortcut: {hk_display}\n{peer_str}")
 
     def _build_menu(self) -> Menu:
         hk_display = "+".join(m.upper() for m in self.cfg_mgr.get("hotkey_modifiers", ["ctrl", "shift"])) + f"+{self.cfg_mgr.get('hotkey_key', 'c').upper()}"
@@ -149,12 +152,13 @@ class ClipBeamApp:
         auto_sync_active = self.cfg_mgr.get("auto_sync", False)
 
         menu_items = [
-            item(f"⚡ Beam Clipboard Now ({hk_display})", lambda: self.beam_clipboard_now(), default=True),
+            item(f"⚡ Beam Clipboard Now ({hk_display})", lambda: self.beam_clipboard_now(grab_active=False), default=True),
             item("📋 Recent Clips", Menu(*recent_items)),
             Menu.SEPARATOR,
             item("🔄 Auto-Sync Clipboard", self._toggle_auto_sync, checked=lambda item: self.cfg_mgr.get("auto_sync", False)),
             item("⚙️ Settings...", lambda: self._open_settings()),
             item("📡 Ping Peer", lambda: self._ping_peer_manual()),
+            item("⬇️ Check for Updates...", lambda: self.check_for_updates_ui()),
             Menu.SEPARATOR,
             item("❌ Exit ClipBeam", lambda: self.exit_app())
         ]
@@ -199,7 +203,7 @@ class ClipBeamApp:
             self.show_notification(title, msg)
         threading.Thread(target=_worker, daemon=True).start()
 
-    def beam_clipboard_now(self):
+    def beam_clipboard_now(self, grab_active: bool = False):
         """Action to send the current Windows clipboard content to peer."""
         def _worker():
             peer_ip = self.cfg_mgr.get("peer_ip", "").strip()
@@ -208,7 +212,12 @@ class ClipBeamApp:
                 self._open_settings()
                 return
 
-            ok, text, err = ClipboardManager.get_text()
+            if grab_active:
+                # Active selection grabbing: captures currently highlighted text directly!
+                ok, text, err = ClipboardManager.grab_active_selection()
+            else:
+                ok, text, err = ClipboardManager.get_text()
+
             if not ok or not text.strip():
                 self.show_notification("⚠️ Clipboard Notice", "Clipboard has no text to beam.")
                 return
@@ -270,7 +279,45 @@ class ClipBeamApp:
                 ok, text, _ = ClipboardManager.get_text()
                 if ok and text and text != self._last_sent_text:
                     self._last_sent_text = text
-                    self.beam_clipboard_now()
+                    self.beam_clipboard_now(grab_active=False)
+
+    def check_for_updates_ui(self):
+        """Check for updates from GitHub releases and prompt user."""
+        def _worker():
+            self.show_notification("🔍 Updates", "Checking GitHub for updates...")
+            has_update, latest_tag, download_url, notes = Updater.check_for_updates(APP_VERSION)
+            if not has_update:
+                if latest_tag:
+                    self.show_notification("✓ Up to Date", f"ClipBeam {APP_VERSION} is the latest version.")
+                else:
+                    self.show_notification("⚠️ Update Check", notes)
+                return
+
+            # An update is available! Show confirmation dialog via Tkinter
+            def _prompt():
+                import tkinter as tk
+                from tkinter import messagebox
+                root = tk.Tk()
+                root.withdraw()
+                root.attributes("-topmost", True)
+                answer = messagebox.askyesno(
+                    "ClipBeam Update Available",
+                    f"A new version of ClipBeam is available: {latest_tag} (Current: {APP_VERSION})\n\n"
+                    f"Would you like to download and install this update now?",
+                    parent=root
+                )
+                root.destroy()
+                if answer:
+                    self.show_notification("⬇️ Updating", f"Downloading {latest_tag}...")
+                    def on_status(msg):
+                        self.show_notification("⬇️ Updating", msg)
+                    ok, err = Updater.apply_update(download_url, on_status=on_status)
+                    if not ok:
+                        self.show_notification("❌ Update Failed", err)
+
+            threading.Thread(target=_prompt, daemon=True).start()
+
+        threading.Thread(target=_worker, daemon=True).start()
 
     def show_notification(self, title: str, message: str):
         """Show native Windows notification balloon/toast via tray icon."""

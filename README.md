@@ -10,7 +10,8 @@ No character limits, no clunky Google Chat highlighting, no terminals opening in
 
 ## ✨ Features
 
-- **⚡ Instant Beam (`Ctrl + Shift + C`)**: Press the hotkey on Computer A, and the text immediately lands in Computer B's clipboard, ready for `Ctrl + V`.
+- **⚡ Instant Beam & Auto-Grab (`Ctrl + Shift + C`)**: Highlight text or terminal logs and press `Ctrl + Shift + C`. ClipBeam automatically copies the highlighted selection and beams it straight into Computer B's clipboard, ready for `Ctrl + V`.
+- **🔄 1-Click In-App Updates**: Right-click the tray icon and click **"⬇️ Check for Updates..."** to seamlessly download and update to the latest release directly from GitHub without manual re-installation.
 - **🔒 AES-256 Encrypted**: End-to-end encryption using Fernet (AES-128-CBC + HMAC-SHA256) with a pre-shared secret passphrase. Unauthorized packets or mismatched keys are rejected.
 - **📦 High-Speed zlib Compression**: Massive 50,000-line server logs compress by 80–90% and beam across your Wi-Fi in milliseconds.
 - **🛡️ Corporate VPN Friendly**: Designed to work over local subnets even when one computer is connected to a corporate VPN (like Palo Alto GlobalProtect) where multicast/mDNS is blocked.

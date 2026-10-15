@@ -36,6 +36,7 @@ def build():
         "--hidden-import=PIL",
         "--hidden-import=PIL.Image",
         "--hidden-import=tkinter",
+        "--hidden-import=updater",
         str(base_dir / "main.py")
     ]
 
